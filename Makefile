@@ -4,14 +4,18 @@ CC=$(CROSS_COMPILE)gcc
 LD=$(CROSS_COMPILE)ld
 OBJCOPY=$(CROSS_COMPILE)objcopy
 
+DRIVERS=prcm
+
+INC_PATH=$(addprefix $(PWD)/drivers/, $(addsuffix /include, $(DRIVERS)))
+
 COMMON_FLAGS=
 AFLAGS=$(COMMON_FLAGS) -mcpu=cortex-a8
-CFLAGS=$(COMMON_FLAGS) -O2 -c -mcpu=cortex-a8 -std=gnu17
+CFLAGS=$(COMMON_FLAGS) -O2 -c -mcpu=cortex-a8 -std=gnu17 $(addprefix -I, $(INC_PATH))
 LFLAGS=$(COMMON_FLAGS) -O2
 
 PASS_OPTIONS=AS="$(AS)" CC="$(CC)" LD="$(LD)" AFLAGS="$(AFLAGS)" CFLAGS="$(CFLAGS)" LFLAGS="$(LFLAGS)"
 
-MODULES=boot core
+MODULES=boot core drivers
 MOD_ARS=$(addsuffix /output.o, $(MODULES))
 OUTPUT=MLO
 
