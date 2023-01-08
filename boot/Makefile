@@ -1,5 +1,4 @@
-SRC=$(wildcard src/*.c) $(wildcard src/*.s)
-INC=$(wildcard src/*.h)
+SRC=$(wildcard src/*.s)
 OBJ=$(SRC:src/%=obj/%.o)
 
 output.o: $(OBJ)

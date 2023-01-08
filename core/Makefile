@@ -1,5 +1,5 @@
 SRC=$(wildcard src/*.c)
-INC=$(wildcard src/*.h)
+INC=$(wildcard src/*.h) $(foreach dir, $(INC_PATH), $(wildcard $(dir)))
 OBJ=$(SRC:src/%=obj/%.o)
 
 output.o: $(OBJ)

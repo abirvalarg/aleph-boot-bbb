@@ -1,7 +1,7 @@
 DRIVERS=prcm
 DRIVER_OBJ=$(addsuffix /output.o, $(DRIVERS))
 
-PASS_OPTIONS=AS="$(AS)" CC="$(CC)" LD="$(LD)" AFLAGS="$(AFLAGS)" CFLAGS="$(CFLAGS)" LFLAGS="$(LFLAGS)"
+PASS_OPTIONS=AS="$(AS)" CC="$(CC)" LD="$(LD)" AFLAGS="$(AFLAGS)" CFLAGS="$(CFLAGS)" LFLAGS="$(LFLAGS)" INC_PATH="$(INC_PATH)"
 
 output.o: $(DRIVER_OBJ)
 	$(LD) -r -o $@ $^
