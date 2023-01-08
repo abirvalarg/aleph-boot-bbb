@@ -1,0 +1,3 @@
+*.o
+/aleph-boot-bbb*
+/MLO
