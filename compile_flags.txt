@@ -2,3 +2,4 @@
 -Idrivers/prcm/include
 -Idrivers/gpio/include
 -Iinclude
+-xc
