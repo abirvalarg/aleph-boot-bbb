@@ -2,44 +2,31 @@ CROSS_COMPILE=arm-none-eabi-
 AS=$(CROSS_COMPILE)as
 CC=$(CROSS_COMPILE)gcc
 LD=$(CROSS_COMPILE)ld
-OBJCOPY=$(CROSS_COMPILE)objcopy
 
-DRIVERS=prcm
+AFLAGS=-mcpu=cortex-a8
+CFLAGS=-mcpu=cortex-a8 -c -O2 -std=gnu17
+LFLAGS=
 
-INC_PATH=$(addprefix $(PWD)/drivers/, $(addsuffix /include, $(DRIVERS))) $(PWD)/include
+SRC=$(wildcard src/*.c) $(wildcard src/*.s)
+INC=$(wildcard src/*.h)
+OBJ=$(SRC:src/%=obj/%.o)
 
-COMMON_FLAGS=
-AFLAGS=$(COMMON_FLAGS) -mcpu=cortex-a8
-CFLAGS=$(COMMON_FLAGS) -O2 -c -mcpu=cortex-a8 -std=gnu17 $(addprefix -I, $(INC_PATH))
-LFLAGS=$(COMMON_FLAGS) -O2
-
-PASS_OPTIONS=AS="$(AS)" CC="$(CC)" LD="$(LD)" AFLAGS="$(AFLAGS)" CFLAGS="$(CFLAGS)" LFLAGS="$(LFLAGS)" INC_PATH="$(INC_PATH)"
-
-MODULES=boot core drivers
-MOD_ARS=$(addsuffix /output.o, $(MODULES))
-OUTPUT=MLO
-
-all: $(OUTPUT)
-
-$(OUTPUT): aleph-boot-bbb.bin
+MLO: aleph-boot-bbb.bin scripts/make-MLO.py
 	python scripts/make-MLO.py
 
 aleph-boot-bbb.bin: aleph-boot-bbb
-	$(OBJCOPY) -O binary $< $@
+	$(CROSS_COMPILE)objcopy -O binary $< $@
 
-aleph-boot-bbb: $(MOD_ARS)
+aleph-boot-bbb: $(OBJ)
 	$(LD) $(LFLAGS) -Tmemmap.ld -o $@ $^
 
-%/output.o: %
-	cd $< && $(MAKE) $(PASS_OPTIONS)
+obj/%.c.o: src/%.c $(INC)
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) -o $@ $<
 
-dump: aleph-boot-bbb
-	$(CROSS_COMPILE)objdump -D $<
+obj/%.s.o: src/%.s
+	@mkdir -p $(@D)
+	$(AS) $(AFLAGS) -o $@ $<
 
-clean: $(addprefix clean_, $(MODULES))
-	rm aleph-boot-bbb{,.bin} MLO 2> /dev/null || true
-
-clean_%: %
-	cd $< && $(MAKE) $(PASS_OPTIONS) clean
-
-# .PHONY: all dump clean $(addprefix clean_, $(MODULES))
+clean:
+	rm -r aleph-boot-bbb* MLO obj 2> /dev/null || true

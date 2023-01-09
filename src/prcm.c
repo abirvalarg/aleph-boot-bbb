@@ -1,5 +1,5 @@
-#include <prcm.h>
-#include <types.h>
+#include "prcm.h"
+#include "types.h"
 
 static volatile u32 *const CM_PER = (volatile u32*)0x44E00000;
 
